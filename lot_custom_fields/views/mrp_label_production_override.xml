@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+         <template id="label_production_view_pdf" name="Production Label PDF">
+            <t t-call="web.basic_layout">
+                <t t-set="uom_categ_unit" t-value="env.ref('uom.product_uom_unit')"/>
+                <div class="oe_structure"/>
+
+                <!-- Get the carton UoM by name (adjust 'Carton' to match your exact UoM name) -->
+                <t t-set="carton_uom" t-value="env['uom.uom'].search([('name', 'ilike', 'carton')], limit=1)"/>
+
+                <!-- Get actual quantity produced and UoM -->
+                <t t-set="produced_qty" t-value="docs.qty_producing or docs.product_qty"/>
+                <t t-set="produced_uom" t-value="docs.product_uom_id"/>
+
+                <!-- Convert quantity to cartons -->
+                <t t-set="qty_in_cartons" t-value="produced_qty"/>
+
+                <!-- If carton UoM exists and current UoM is different, convert -->
+                <t t-if="carton_uom and produced_uom and produced_uom.id != carton_uom.id">
+                    <!-- Convert from current UoM to cartons -->
+                    <t t-set="qty_in_cartons" t-value="produced_uom._compute_quantity(produced_qty, carton_uom, round=False)"/>
+                </t>
+                <t t-elif="not carton_uom and produced_uom.name.lower() not in ['carton', 'cartons']">
+                    <!-- Fallback: If no carton UoM found and using units, divide by 10 -->
+                    <!-- Adjust the divisor (10) based on your conversion: 1 Carton = X Units -->
+                    <t t-set="qty_in_cartons" t-value="produced_qty / 10"/>
+                </t>
+
+                <!-- Get total labels based on cartons (1 label per carton) -->
+                <t t-set="total_labels" t-value="int(qty_in_cartons)"/>
+
+                <!-- Determine labels per page -->
+                <t t-set="labels_per_page" t-value="2 if total_labels &gt; 1 else 1"/>
+
+                <!-- ODOO 19 CHANGE: lot_producing_id is now lot_producing_ids (Many2many) -->
+                <t t-set="lot_number" t-value="''"/>
+                <t t-set="expiry_date" t-value="''"/>
+                <t t-set="lot_obj" t-value="docs.lot_producing_ids[:1] if docs.lot_producing_ids else False"/>
+
+                <!-- Get lot number -->
+                <t t-if="lot_obj and lot_obj.name">
+                    <t t-set="lot_number" t-value="lot_obj.name"/>
+                </t>
+
+                <!-- Get expiry date from lot object if use_expiration_date is enabled -->
+                <t t-if="lot_obj and lot_obj.use_expiration_date">
+                    <t t-if="lot_obj.expiration_date">
+                        <t t-set="expiry_date" t-value="lot_obj.expiration_date.strftime('%d/%m/%Y')"/>
+                    </t>
+                    <t t-elif="lot_obj.use_date">
+                        <t t-set="expiry_date" t-value="lot_obj.use_date.strftime('%d/%m/%Y')"/>
+                    </t>
+                </t>
+
+                <div class="oe_structure"/>
+
+                <!-- Group labels by page -->
+                <t t-foreach="range(0, total_labels, labels_per_page)" t-as="page_index">
+                    <div class="o_label_sheet" style="page-break-after: always; min-height: 100vh; padding: 12mm 10mm;">
+                        <div class="oe_structure"/>
+
+                        <!-- Labels container for current page -->
+                        <div style="display: flex; flex-direction: column; gap: 15mm; align-items: center; justify-content: space-around; min-height: 100%;">
+                            <t t-foreach="range(page_index, min(page_index + labels_per_page, total_labels))" t-as="label_index">
+                                <div style="display: flex; justify-content: center; align-items: center; flex: 1; margin: 3mm 0;">
+
+                                    <div style="position:relative; width:150mm; height:100mm; border: 2px solid black; padding: 3mm; display: flex; flex-direction: column; background: white; margin: 0 auto;">
+
+                                        <!-- Company Logo -->
+                                        <div style="text-align: center; margin-bottom: 0.5mm; flex-shrink: 0;">
+                                            <img t-if="docs.env.user.company_id.logo" t-att-src="image_data_uri(docs.env.user.company_id.logo)" style="max-height: 42mm; max-width: 130mm; width: auto;" alt="Company Logo"/>
+                                        </div>
+
+                                        <!-- Product Name -->
+                                        <div style="text-align: center; font-weight: bold; font-size: 26pt; margin-bottom: 1mm; flex-shrink: 0; line-height: 1;">
+                                            <span t-out="docs.product_id.display_name"/>
+                                        </div>
+
+                                        <!-- Box Content -->
+                                        <div style="text-align: center; font-size: 22pt; font-weight: bold; margin-bottom: 2mm; flex-shrink: 0; line-height: 1;">
+                                            10 X 1.000 GR
+                                        </div>
+
+                                        <!-- Bottom Section -->
+                                        <div style="position: relative; display: flex; justify-content: space-between; align-items: flex-start; margin-top: auto; min-height: 16mm;">
+
+                                            <!-- Left Column: Production Info -->
+                                            <div style="text-align: left; flex: 2; font-size: 13pt; line-height: 1.1;">
+                                                <!-- Lot with Barcode -->
+                                                <div style="margin-bottom: 0.5mm;">
+                                                    <span style="font-weight: bold;">Lot: </span>
+                                                    <t t-if="lot_number">
+                                                        <span t-out="lot_number" t-options="{'widget': 'barcode', 'symbology': 'Code128', 'width': 600, 'height': 100, 'img_style': 'width:160px;height:35px', 'humanreadable': 1}"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span>N/A</span>
+                                                    </t>
+                                                </div>
+
+                                                <div style="margin-bottom: 0.5mm;">
+                                                    <span style="font-weight: bold;">Production Date : </span>
+                                                    <span t-out="docs.date_start and docs.date_start.strftime('%d/%m/%Y') or ''"/>
+                                                </div>
+                                                <div>
+                                                    <span style="font-weight: bold;">Expire Date : </span>
+                                                    <t t-if="expiry_date">
+                                                        <span t-out="expiry_date"/>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <span>N/A</span>
+                                                    </t>
+                                                </div>
+                                            </div>
+
+                                            <!-- Right Column: Company Info -->
+                                            <div style="position: absolute; right: 0; bottom: 0; text-align: center; font-size: 9pt; line-height: 1;">
+                                                <div style="font-weight: bold;" t-out="docs.env.user.company_id.name"/>
+                                                <div>Société : World of delights</div>
+                                                <div t-if="docs.env.user.company_id.phone" t-out="docs.env.user.company_id.phone"/>
+                                                <div>Delizio@wod.ma</div>
+                                                <div t-if="docs.env.user.company_id.website" t-out="docs.env.user.company_id.website"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </template>
+</odoo>

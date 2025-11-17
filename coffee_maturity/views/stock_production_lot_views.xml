@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_lot_form_inherit_maturity" model="ir.ui.view">
+        <field name="name">stock.lot.form.maturity</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet//group[2]" position="inside">
+                <!-- condition -->
+                <field name="show_maturity_fields" invisible="1"/>
+
+                <separator string="Informations de maturité" invisible="not show_maturity_fields"/>
+                <field name="production_date" string="Date de production" invisible="not show_maturity_fields"/>
+                <field name="maturity_time" string="Durée de maturité" invisible="not show_maturity_fields"/>
+                <field name="niveau_torrefaction" string="Niveau de Torréfaction" invisible="not show_maturity_fields"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

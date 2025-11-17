@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="cafe-vert" model="product.category">
+        <field name="name">01-Café Vert</field>
+    </record>
+    <record id="cafe-pese" model="product.category">
+        <field name="name">02-Café Pesé</field>
+    </record>
+    <record id="cafe-tor" model="product.category">
+        <field name="name">03-Café Torréfié</field>
+    </record>
+    <record id="cafe-mel" model="product.category">
+        <field name="name">04-Mélange</field>
+    </record>
+    <record id="cafe-pro" model="product.category">
+        <field name="name">05-Produit Final</field>
+    </record>
+    <record id="cafe-pal" model="product.category">
+        <field name="name">06-Palette</field>
+    </record>
+    <record id="emballage" model="product.category">
+        <field name="name">07-Emballages</field>
+    </record>
+    <record id="consommable" model="product.category">
+        <field name="name">08-Marchandise</field>
+    </record>
+    <record id="services" model="product.category">
+        <field name="name">09-Services</field>
+    </record>
+</odoo>

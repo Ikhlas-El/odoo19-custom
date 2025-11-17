@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_coffee_origin_user,coffee.origin.user,model_coffee_origin,base.group_user,1,0,0,0
+access_coffee_origin_inventory_admin,coffee.origin.inventory.admin,model_coffee_origin,stock.group_stock_manager,1,1,1,1

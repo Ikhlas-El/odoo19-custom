@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_lot_label_inherit" inherit_id="stock.report_lot_label">
+        <xpath expr="." position="replace">
+            <t t-call="web.html_container">
+                <meta charset="UTF-8"/>
+                <!-- Labels container -->
+                <div style="padding: 15mm 10mm;">
+                    <t t-foreach="docs" t-as="o">
+                        <!-- Page break every 2 labels -->
+                        <t t-if="o_index % 2 == 0 and o_index != 0">
+                            <div style="page-break-before: always;"/>
+                        </t>
+
+                        <!-- Centered label container with fixed height -->
+                        <div class="label-container" style="width: 100mm; min-height: 120mm; border: 2px solid #000; box-sizing: border-box; display: block; font-family: Arial, sans-serif; background: white; margin: 0 auto 15mm auto; page-break-inside: avoid;">
+
+                            <!-- HEADER SECTION -->
+                            <div style="padding: 4mm; border-bottom: 2px solid #000; text-align: center;">
+                                <div style="font-size: 14pt; font-weight: bold;">
+                                    Espresso Factory
+                                </div>
+                            </div>
+
+                            <!-- LOT INFO SECTION -->
+                            <table style="width: 100%; border-bottom: 2px solid #000; border-collapse: collapse; font-size: 10pt; padding: 5mm; line-height: 1.5;">
+                                <tr>
+                                    <td style="width: 50%; padding: 4px 4mm;">
+                                        <strong>Produit:</strong><br/>
+                                        <t t-out="o.product_id.name or o.clean_product_name"/>
+                                    </td>
+                                    <td style="width: 50%; padding: 4px 4mm;">
+                                        <strong>Lot:</strong><br/>
+                                        <t t-out="o.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <!-- Quantity - FIXED TO SHOW QTY_PRODUCING FROM MO -->
+                                    <td style="width: 50%; padding: 4px 4mm;">
+                                        <strong>Quantité:</strong><br/>
+                                        <t t-set="mo" t-value="o.env['mrp.production'].search([('lot_producing_ids', 'in', o.id), ('state', 'not in', ['done', 'cancel'])], limit=1)"/>
+                                        <t t-if="mo and mo.qty_producing">
+                                            <t t-out="mo.qty_producing"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-out="sum(o.quant_ids.mapped('quantity')) or 0"/>
+                                        </t>
+                                        <t t-out="o.product_uom_id.name"/>
+                                    </td>
+
+                                    <td style="width: 50%; padding: 4px 4mm;">
+                                        <strong>Date Production:</strong><br/>
+                                        <span t-field="o.create_date" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- LOT BARCODE SECTION - FIXED TO MATCH MRP FORMAT -->
+                            <div name="lot_name" style="display:none;"/>
+                            <div style="padding: 5mm 4mm; border-bottom: 2px solid #000; text-align: center;">
+                                <span t-field="o.name" t-options="{'widget': 'barcode', 'symbology': 'Code128', 'width': 600, 'height': 100, 'img_style': 'width:60%;height:30px', 'humanreadable': 1}"/>
+                            </div>
+
+                            <!-- QR + DATAMATRIX SIDE BY SIDE -->
+                            <div style="padding: 5mm; text-align: center; white-space: nowrap;">
+
+                                <!-- QR -->
+                                <div style="display: inline-block; vertical-align: top; width: 45%; text-align: center;">
+                                    <span t-field="o.qr_data" t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 200, 'height': 200, 'img_style': 'width:90px;height:90px'}"/>
+                                    <t t-if="not o.qr_data">
+                                        <span t-field="o.name" t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 200, 'height': 200, 'img_style': 'width:90px;height:90px'}"/>
+                                    </t>
+                                    <div style="font-size: 9pt; margin-top: 1mm;">QR</div>
+                                </div>
+
+                                <!-- DATAMATRIX -->
+                                <div style="display: inline-block; vertical-align: top; width: 45%; text-align: center;">
+                                    <t t-set="final_barcode" t-value="''"/>
+                                    <t t-if="env.user.has_group('stock.group_stock_lot_print_gs1')">
+                                        <t t-if="o.product_id.valid_ean" t-set="final_barcode" t-value="'01' + '0' * (14 - len(o.product_id.barcode)) + o.product_id.barcode"/>
+                                        <t t-if="o.product_id.tracking == 'lot'" t-set="final_barcode" t-value="(final_barcode or '') + '10' + o.name"/>
+                                        <t t-elif="o.product_id.tracking == 'serial'" t-set="final_barcode" t-value="(final_barcode or '') + '21' + o.name"/>
+                                    </t>
+
+                                    <t name="gs1_datamatrix_lot" t-ignore="true"/>
+                                    <t t-if="final_barcode">
+                                        <span t-out="final_barcode" t-options="{'widget': 'barcode', 'symbology': 'ECC200DataMatrix', 'img_style': 'width:90px;height:90px'}"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span t-field="o.name" t-options="{'widget': 'barcode', 'symbology': 'QR', 'width': 200, 'height': 200, 'img_style': 'width:90px;height:90px'}"/>
+                                    </t>
+                                    <div style="font-size: 9pt; margin-top: 1mm;">DataMatrix</div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

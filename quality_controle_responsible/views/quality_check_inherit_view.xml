@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add user_id field to Quality Check form (if not already visible) -->
+    <record id="view_quality_check_form_inherit_user" model="ir.ui.view">
+        <field name="name">quality.check.form.inherit.user</field>
+        <field name="model">quality.check</field>
+        <field name="inherit_id" ref="quality_control.quality_check_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='point_id']" position="after">
+                <field name="user_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

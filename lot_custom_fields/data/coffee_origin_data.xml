@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Coffee Origins -->
+        <record id="origin_colombia" model="coffee.origin">
+            <field name="name">Colombie</field>
+            <field name="code">Col</field>
+        </record>
+        <record id="origin_vietnam" model="coffee.origin">
+            <field name="name">Vietnam</field>
+            <field name="code">Vit</field>
+        </record>
+        <record id="origin_ethiopia" model="coffee.origin">
+            <field name="name">Ethiopie</field>
+            <field name="code">ETH</field>
+        </record>
+        <record id="origin_uganda" model="coffee.origin">
+            <field name="name">Ouganda</field>
+            <field name="code">Ugh</field>
+        </record>
+        <record id="origin_india" model="coffee.origin">
+            <field name="name">Inde</field>
+            <field name="code">Ind</field>
+        </record>
+        <record id="origin_Mexique" model="coffee.origin">
+            <field name="name">Mexique</field>
+            <field name="code">Mex</field>
+        </record>
+
+    </data>
+</odoo>

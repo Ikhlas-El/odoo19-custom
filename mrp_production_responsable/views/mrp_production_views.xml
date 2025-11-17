@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_form_view_inherit_responsable_pesee" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit.responsable.pesee</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <!-- Add the field after the user_id field in the header -->
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="responsable_pesee_id" widget="many2one_avatar_user"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
