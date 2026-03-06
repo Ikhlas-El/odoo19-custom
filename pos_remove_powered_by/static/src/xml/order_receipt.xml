@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+
+        <!-- Remove Powered by Odoo (second occurrence only) -->
+        <xpath expr="(//div[contains(@class,'pos-receipt-order-data')])[2]" position="replace"/>
+
+    </t>
+
+</templates>
