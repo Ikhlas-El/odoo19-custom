@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_form_view_fut" model="ir.ui.view">
+        <field name="name">mrp.production.form.fut</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='components']" position="after">
+                <page string="Fût" name="fut_lines" invisible="not show_fut_tab">
+                    <field name="fut_line_ids" widget="one2many">
+                        <list editable="bottom">
+                            <field name="fut_number"              string="N° Fût"/>
+                            <field name="responsable_pesee_id"    string="Responsable pesée"      readonly="0"/>
+                            <field name="conducteur_machine_id"   string="Conducteur machine"     readonly="0"/>
+                            <field name="quantite"                string="Quantité (kg)"          sum="Total Quantité"/>
+                            <field name="quantite_after_roasting" string="Qté après torréfaction" sum="Total Qté torréfaction"/>
+                            <field name="niveau_torrefaction"     string="Niveau de torréfaction"/>
+                            <field name="start_time"              string="Heure de début"  readonly="0"/>
+                            <field name="end_time"                string="Heure de fin"    readonly="0"/>
+                            <field name="duration"                string="Durée (min)"     readonly="0"/>
+
+                            <button name="action_start_timer"
+                                    string="Démarrer"
+                                    type="object"
+                                    class="btn-primary btn-sm"
+                                    invisible="is_started or timer_running"/>
+                            <button name="action_stop_timer"
+                                    string="Arrêter"
+                                    type="object"
+                                    class="btn-warning btn-sm"
+                                    invisible="not timer_running"/>
+
+                            <button name="action_print_etiquette"
+                                    title="Télécharger l'étiquette"
+                                    type="object"
+                                    icon="fa-download"
+                                    class="o_icon_button text-muted"/>
+
+                            <field name="is_started"    column_invisible="1"/>
+                            <field name="timer_running" column_invisible="1"/>
+                        </list>
+                    </field>
+                    <group>
+                        <button name="action_regenerate_fut_lines"
+                                string="Régénérer les lignes Fût"
+                                type="object"
+                                class="btn-secondary"
+                                confirm="Cela supprimera les lignes existantes. Continuer ?"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

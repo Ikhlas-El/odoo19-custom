@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form view -->
+    <record id="product_template_form_view_fut" model="ir.ui.view">
+        <field name="name">product.template.form.fut</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']" position="inside">
+                <group string="Configuration Fût">
+                    <field name="fut_size"
+                           string="Taille du fût"
+                           widget="radio"
+                           options="{'horizontal': true}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Kanban view -->
+    <record id="product_template_kanban_view_fut" model="ir.ui.view">
+        <field name="name">product.template.kanban.fut</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_kanban_view"/>
+        <field name="arch" type="xml">
+            <!-- Declare fields — same working syntax as before -->
+            <field name="name" position="before">
+                <field name="fut_size"/>
+                <field name="nbr_futs"/>
+            </field>
+            <!-- Append to the very bottom of the card using t-name="card" -->
+            <xpath expr="//field[@name='qty_available']/.." position="after">
+                <t t-if="record.fut_size.raw_value and record.nbr_futs.raw_value">
+                    <div style="margin-top:2px;">
+                        <span class="text-muted" style="font-size:11px;">
+                            <t t-out="record.nbr_futs.raw_value"/> fût(s)
+                        </span>
+                    </div>
+                </t>
+            </xpath>
+        </field>
+    </record>
+</odoo>
