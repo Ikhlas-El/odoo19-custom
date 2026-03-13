@@ -78,7 +78,12 @@
 
                                         <!-- Box Content -->
                                         <div style="text-align: center; font-size: 22pt; font-weight: bold; margin-bottom: 2mm; flex-shrink: 0; line-height: 1;">
-                                            10 X 1.000 GR
+                                            <t t-if="'250g' in docs.product_id.name.lower() or '250 g' in docs.product_id.name.lower()">
+                                                27 X 250 GR
+                                            </t>
+                                            <t t-else="">
+                                                10 X 1.000 GR
+                                            </t>
                                         </div>
 
                                         <!-- Bottom Section -->
