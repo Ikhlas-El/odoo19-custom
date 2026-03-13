@@ -7,11 +7,12 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//page[@name='general_information']" position="inside">
-                <group string="Configuration Fût">
+                <group string="Configuration Fût" invisible="not show_fut_size">
+                    <field name="show_fut_size" invisible="1"/>
                     <field name="fut_size"
-                           string="Taille du fût"
-                           widget="radio"
-                           options="{'horizontal': true}"/>
+                        string="Taille du fût"
+                        widget="radio"
+                        options="{'horizontal': true, 'optional': true}"/>
                 </group>
             </xpath>
         </field>
@@ -23,12 +24,12 @@
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_kanban_view"/>
         <field name="arch" type="xml">
-            <!-- Declare fields — same working syntax as before -->
-            <field name="name" position="before">
+            <!-- Declare fields at kanban root level — NOT inside name field -->
+            <kanban>
                 <field name="fut_size"/>
                 <field name="nbr_futs"/>
-            </field>
-            <!-- Append to the very bottom of the card using t-name="card" -->
+            </kanban>
+            <!-- Display at bottom of card -->
             <xpath expr="//field[@name='qty_available']/.." position="after">
                 <t t-if="record.fut_size.raw_value and record.nbr_futs.raw_value">
                     <div style="margin-top:2px;">

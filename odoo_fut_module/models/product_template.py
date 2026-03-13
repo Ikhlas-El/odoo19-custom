@@ -18,6 +18,24 @@ class ProductTemplate(models.Model):
         digits=(10, 0),
     )
 
+    show_fut_size = fields.Boolean(
+        compute='_compute_show_fut_size',
+    )
+
+    @api.depends('categ_id')
+    def _compute_show_fut_size(self):
+        target_ids = []
+        for xml_id in [
+            'coffee_maturity.cafe-pese',
+            'coffee_maturity.cafe-tor',
+            'coffee_maturity.cafe-mel',
+        ]:
+            cat = self.env.ref(xml_id, raise_if_not_found=False)
+            if cat:
+                target_ids.append(cat.id)
+        for rec in self:
+            rec.show_fut_size = rec.categ_id.id in target_ids
+
     @api.depends('fut_size', 'qty_available')
     def _compute_nbr_futs(self):
         for rec in self:

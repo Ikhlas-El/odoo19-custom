@@ -107,3 +107,4 @@ class MrpFutLine(models.Model):
         return self.env.ref(
             'odoo_fut_module.action_report_fut_etiquette'
         ).report_action(self)
+        

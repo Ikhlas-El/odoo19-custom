@@ -12,6 +12,7 @@
         'stock',
     ],
     'data': [
+        'security/ir.model.access.csv',
         'views/product_template_views.xml',
         'views/mrp_production_views.xml',
         'report/report_fut_etiquette.xml',
